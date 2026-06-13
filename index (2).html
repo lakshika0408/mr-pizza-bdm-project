@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mr. Pizza · BDM Capstone · Lakshika Dev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0a0a0a;
+  --surface:#111111;
+  --card:#161616;
+  --card2:#1a1a1a;
+  --border:rgba(255,255,255,0.06);
+  --border2:rgba(255,255,255,0.11);
+  --pizza:#E8441A;   /* tomato-red — brand anchor */
+  --cheese:#F5A623;  /* warm amber */
+  --basil:#2ECC71;   /* fresh green */
+  --mozzarella:#E8E0D5; /* off-white */
+  --text:#F0EDE8;
+  --muted:#5A5550;
+  --soft:#8A8480;
+  --gc:rgba(255,255,255,0.04);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.65;overflow-x:hidden;}
+
+/* subtle grain */
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:0.5;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 36px;background:rgba(10,10,10,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Playfair Display',serif;font-weight:800;font-size:18px;color:var(--pizza);letter-spacing:-0.02em;}
+.nav-links{display:flex;gap:28px;list-style:none;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:0.08em;text-transform:uppercase;transition:color 0.2s;}
+.nav-links a:hover{color:var(--text);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:6px;font-size:11px;font-family:'JetBrains Mono',monospace;text-decoration:none;transition:all 0.2s;}
+.nav-btn-gh{background:rgba(255,255,255,0.05);border:1px solid var(--border2);color:var(--soft);}
+.nav-btn-gh:hover{background:rgba(255,255,255,0.09);color:var(--text);}
+.nav-tag{background:rgba(232,68,26,0.1);border:1px solid rgba(232,68,26,0.25);color:var(--pizza);font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 10px;border-radius:4px;letter-spacing:0.06em;}
+
+/* LAYOUT */
+main{padding-top:56px;position:relative;z-index:1;}
+.container{max-width:1160px;margin:0 auto;padding:0 28px;}
+section{padding:88px 0;}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);}
+
+/* HERO */
+.hero{min-height:92vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:60px 0;}
+.hero-bg{position:absolute;inset:0;pointer-events:none;}
+.hero-circle{position:absolute;border-radius:50%;}
+.hc1{width:600px;height:600px;background:radial-gradient(circle,rgba(232,68,26,0.07) 0%,transparent 70%);top:50%;left:55%;transform:translate(-50%,-50%);animation:pulse 6s ease-in-out infinite;}
+.hc2{width:300px;height:300px;background:radial-gradient(circle,rgba(245,166,35,0.05) 0%,transparent 70%);bottom:10%;right:5%;animation:pulse 8s ease-in-out infinite 2s;}
+@keyframes pulse{0%,100%{opacity:0.6;transform:translate(-50%,-50%) scale(1);}50%{opacity:1;transform:translate(-50%,-50%) scale(1.08);}}
+.hc2{animation:pulse2 8s ease-in-out infinite 2s;}
+@keyframes pulse2{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:0.9;transform:scale(1.1);}}
+
+.hero-layout{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--pizza);margin-bottom:20px;}
+.eyebrow-dot{width:5px;height:5px;border-radius:50%;background:var(--pizza);animation:blink 1.6s ease infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.15;}}
+h1.hero-title{font-family:'Playfair Display',serif;font-size:clamp(52px,6vw,80px);font-weight:900;line-height:0.95;letter-spacing:-0.03em;margin-bottom:22px;}
+.hero-title .accent{color:var(--pizza);}
+.hero-title .sub{display:block;font-size:clamp(28px,3.5vw,44px);color:var(--soft);font-weight:700;margin-top:6px;}
+.hero-desc{color:var(--soft);font-size:14px;line-height:1.8;max-width:440px;margin-bottom:32px;}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:11px 22px;border-radius:7px;font-size:13px;font-weight:500;text-decoration:none;transition:all 0.2s;cursor:pointer;border:none;font-family:'Inter',sans-serif;}
+.btn-primary{background:var(--pizza);color:#fff;box-shadow:0 0 32px rgba(232,68,26,0.25);}
+.btn-primary:hover{background:#d03a14;transform:translateY(-1px);box-shadow:0 0 44px rgba(232,68,26,0.38);}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--soft);}
+.btn-outline:hover{background:rgba(255,255,255,0.05);color:var(--text);border-color:rgba(255,255,255,0.18);}
+
+/* HERO KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px 20px;position:relative;overflow:hidden;transition:border-color 0.3s,transform 0.25s;}
+.kpi:hover{transform:translateY(-3px);}
+.kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:0;transition:opacity 0.3s;}
+.kpi:hover::after{opacity:1;}
+.kpi-pizza::after{background:linear-gradient(90deg,transparent,var(--pizza),transparent);}
+.kpi-pizza:hover{border-color:rgba(232,68,26,0.3);}
+.kpi-cheese::after{background:linear-gradient(90deg,transparent,var(--cheese),transparent);}
+.kpi-cheese:hover{border-color:rgba(245,166,35,0.3);}
+.kpi-basil::after{background:linear-gradient(90deg,transparent,var(--basil),transparent);}
+.kpi-basil:hover{border-color:rgba(46,204,113,0.3);}
+.kpi-moz::after{background:linear-gradient(90deg,transparent,rgba(232,224,213,0.5),transparent);}
+.kpi-moz:hover{border-color:rgba(232,224,213,0.2);}
+.kpi-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:16px;}
+.kpi-num{font-family:'Playfair Display',serif;font-size:32px;font-weight:800;letter-spacing:-0.04em;line-height:1;margin-bottom:4px;}
+.kpi-lbl{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:0.05em;}
+
+/* SECTION HEADERS */
+.stag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--pizza);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.stag::before{content:'//';opacity:0.4;}
+h2.stitle{font-family:'Playfair Display',serif;font-size:clamp(28px,3.8vw,44px);font-weight:800;letter-spacing:-0.03em;margin-bottom:12px;line-height:1.05;}
+p.sdesc{color:var(--soft);font-size:14px;line-height:1.8;max-width:560px;margin-bottom:48px;}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.mt{margin-top:16px;}
+.mt2{margin-top:32px;}
+
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;transition:border-color 0.3s,transform 0.25s;}
+.card:hover{border-color:rgba(232,68,26,0.2);transform:translateY(-2px);}
+
+/* CHART CARD */
+.cc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px;transition:border-color 0.3s;}
+.cc:hover{border-color:rgba(255,255,255,0.1);}
+.cc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;gap:12px;}
+.cc-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:3px;}
+.cc-sub{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.cc-badge{font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 8px;border-radius:4px;background:rgba(232,68,26,0.1);color:var(--pizza);border:1px solid rgba(232,68,26,0.2);white-space:nowrap;letter-spacing:0.06em;}
+.cw{position:relative;height:260px;}
+.cwt{position:relative;height:320px;}
+.cwl{position:relative;height:380px;}
+
+/* PROBLEM CARDS */
+.pc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px;position:relative;overflow:hidden;transition:all 0.3s;}
+.pc:hover{transform:translateY(-4px);}
+.pc-bar{position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity 0.3s;}
+.pc:hover .pc-bar{opacity:1;}
+.pc-p1 .pc-bar{background:linear-gradient(90deg,var(--pizza),transparent);}
+.pc-p1:hover{border-color:rgba(232,68,26,0.3);}
+.pc-p2 .pc-bar{background:linear-gradient(90deg,var(--cheese),transparent);}
+.pc-p2:hover{border-color:rgba(245,166,35,0.3);}
+.pc-p3 .pc-bar{background:linear-gradient(90deg,var(--basil),transparent);}
+.pc-p3:hover{border-color:rgba(46,204,113,0.3);}
+.pc-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:20px;}
+.pc-num{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;}
+.ctitle{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;margin-bottom:8px;}
+.cdesc{color:var(--soft);font-size:13px;line-height:1.7;}
+.blist{list-style:none;margin-top:14px;display:grid;gap:7px;}
+.blist li{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--soft);line-height:1.55;}
+.blist li::before{content:'→';color:var(--pizza);opacity:0.6;flex-shrink:0;font-size:11px;margin-top:1px;}
+
+/* IROW */
+.irow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.035);}
+.irow:last-child{border-bottom:none;}
+.idot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.ilbl{font-size:13px;color:var(--soft);}
+.ival{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text);white-space:nowrap;}
+
+/* ABC TABLE */
+.abc-table{width:100%;border-collapse:collapse;}
+.abc-table th{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 12px;border-bottom:1px solid var(--border);}
+.abc-table td{padding:9px 12px;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.03);}
+.abc-table tr:hover td{background:rgba(255,255,255,0.02);}
+.barbg{background:rgba(255,255,255,0.06);border-radius:3px;height:4px;overflow:hidden;flex:1;min-width:60px;}
+.bar{height:100%;border-radius:3px;}
+.cls-badge{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;border-radius:4px;display:inline-block;letter-spacing:0.05em;}
+.cls-a{background:rgba(232,68,26,0.12);border:1px solid rgba(232,68,26,0.28);color:#f87171;}
+.cls-b{background:rgba(245,166,35,0.12);border:1px solid rgba(245,166,35,0.28);color:#fbbf24;}
+.cls-c{background:rgba(46,204,113,0.12);border:1px solid rgba(46,204,113,0.28);color:#6ee7b7;}
+
+/* SEASONAL TABLE */
+.seas-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px;}
+.seas-cell{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;}
+.seas-month{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;}
+.seas-val{font-family:'Playfair Display',serif;font-size:24px;font-weight:800;line-height:1;}
+.seas-neg{color:var(--pizza);}
+.seas-pos{color:var(--basil);}
+.seas-rule{font-size:11px;color:var(--muted);margin-top:6px;}
+
+/* METHOD CARD */
+.mcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;display:flex;gap:20px;transition:all 0.3s;}
+.mcard:hover{border-color:rgba(232,68,26,0.22);transform:translateX(4px);}
+.mnum{font-family:'Playfair Display',serif;font-size:42px;font-weight:900;color:rgba(232,68,26,0.12);line-height:1;min-width:48px;}
+.mtag{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--pizza);margin-bottom:6px;}
+
+/* REC CARDS */
+.rcard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px 26px 26px 22px;position:relative;overflow:hidden;transition:all 0.3s;}
+.rcard:hover{transform:translateY(-3px);}
+.raccent{position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:2px 0 0 2px;}
+.rinner{padding-left:16px;}
+.rtag{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:8px;}
+
+/* IMPACT BOXES */
+.impbox{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;text-align:center;transition:transform 0.25s;}
+.impbox:hover{transform:translateY(-3px);}
+.imp-num{font-family:'Playfair Display',serif;font-size:30px;font-weight:800;line-height:1;margin-bottom:6px;}
+.imp-lbl{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:0.05em;margin-bottom:8px;}
+.imp-desc{font-size:12px;color:var(--soft);line-height:1.6;}
+
+/* TECH STACK */
+.tech-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:6px 13px;border-radius:6px;font-size:11px;color:var(--soft);font-family:'JetBrains Mono',monospace;transition:all 0.2s;}
+.tech-pill:hover{background:rgba(255,255,255,0.08);color:var(--text);}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:40px 0;margin-top:40px;}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;}
+
+/* ANIMATIONS */
+@keyframes fadeup{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.65s ease,transform 0.65s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.rd1{transition-delay:0.07s;}.rd2{transition-delay:0.14s;}.rd3{transition-delay:0.21s;}.rd4{transition-delay:0.28s;}
+
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:rgba(232,68,26,0.35);border-radius:2px;}
+
+@media(max-width:960px){
+  nav{padding:0 18px;}.nav-links{display:none;}
+  .hero-layout{grid-template-columns:1fr;gap:40px;}
+  .g2,.g3,.g4{grid-template-columns:1fr;}
+  .kpi-grid{grid-template-columns:1fr 1fr;}
+  .seas-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:540px){
+  .kpi-grid{grid-template-columns:1fr;}
+  section{padding:60px 0;}
+  .seas-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">🍕 Mr. Pizza</div>
+  <ul class="nav-links">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#problem">Problem</a></li>
+    <li><a href="#insights">Insights</a></li>
+    <li><a href="#methodology">Method</a></li>
+    <li><a href="#recommendations">Recs</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="https://github.com/lakshika0408/mr-pizza-bdm-project" target="_blank" class="nav-btn nav-btn-gh">
+      <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+      GitHub
+    </a>
+  </div>
+</nav>
+
+<main>
+
+<!-- HERO -->
+<section class="hero" id="overview">
+  <div class="hero-bg">
+    <div class="hero-circle hc1"></div>
+    <div class="hero-circle hc2"></div>
+  </div>
+  <div class="container">
+    <div class="hero-layout">
+      <div>
+        <div class="hero-eyebrow"><div class="eyebrow-dot"></div>BDM Capstone · Sep 2023 – Jan 2024</div>
+        <h1 class="hero-title">
+          <span class="accent">Mr. Pizza</span>
+          <span class="sub">Sales Analytics<br>&amp; Forecasting</span>
+        </h1>
+        <p class="hero-desc">Optimizing inventory management and sales forecasting for a single-operator pizza outlet in Kathgodam, Uttarakhand — using MA4 time-series analysis, ABC inventory classification, and day-of-week demand pattern analysis.</p>
+        <div class="hero-actions">
+          <a href="https://github.com/lakshika0408/mr-pizza-bdm-project" target="_blank" class="btn btn-primary">
+            <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+            View on GitHub
+          </a>
+          <a href="https://github.com/lakshika0408/mr-pizza-bdm-project/blob/main/Mr_Pizza_Analysis.xlsx" target="_blank" class="btn btn-outline">📊 View Analysis</a>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+          <a href="https://github.com/lakshika0408/mr-pizza-bdm-project/blob/main/Final_report.pdf" target="_blank" class="btn btn-outline" style="font-size:12px;padding:8px 16px;">📄 Final Report</a>
+          <a href="https://github.com/lakshika0408/mr-pizza-bdm-project/blob/main/Mid_Term_Report.pdf" target="_blank" class="btn btn-outline" style="font-size:12px;padding:8px 16px;">📋 Mid-Term Report</a>
+          <a href="https://github.com/lakshika0408/mr-pizza-bdm-project/blob/main/Proposal_Report.pdf" target="_blank" class="btn btn-outline" style="font-size:12px;padding:8px 16px;">📝 Proposal</a>
+          <a href="https://github.com/lakshika0408/mr-pizza-bdm-project/blob/main/Mr_Pizza_Presentation.pptx" target="_blank" class="btn btn-outline" style="font-size:12px;padding:8px 16px;">🖥️ Presentation</a>
+          <a href="https://github.com/lakshika0408/mr-pizza-bdm-project/blob/main/Mr_Pizza_Analysis.xlsx" target="_blank" class="btn btn-outline" style="font-size:12px;padding:8px 16px;">📈 Excel Data</a>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi kpi-pizza">
+          <div class="kpi-icon" style="background:rgba(232,68,26,0.1);">💰</div>
+          <div class="kpi-num" style="color:var(--pizza);">₹1.53L</div>
+          <div class="kpi-lbl">Total Revenue</div>
+        </div>
+        <div class="kpi kpi-cheese">
+          <div class="kpi-icon" style="background:rgba(245,166,35,0.1);">📅</div>
+          <div class="kpi-num" style="color:var(--cheese);">139</div>
+          <div class="kpi-lbl">Trading Days</div>
+        </div>
+        <div class="kpi kpi-basil">
+          <div class="kpi-icon" style="background:rgba(46,204,113,0.1);">🧾</div>
+          <div class="kpi-num" style="color:var(--basil);">997</div>
+          <div class="kpi-lbl">Transactions</div>
+        </div>
+        <div class="kpi kpi-moz">
+          <div class="kpi-icon" style="background:rgba(232,224,213,0.1);">🍕</div>
+          <div class="kpi-num" style="color:var(--mozzarella);">47</div>
+          <div class="kpi-lbl">Menu Items</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PROBLEM -->
+<section id="problem">
+  <div class="container">
+    <div class="reveal">
+      <div class="stag">Business Context</div>
+      <h2 class="stitle">Three Core Problems</h2>
+      <p class="sdesc">Mr. Pizza is a single-operator B2C food outlet in Kathgodam, Uttarakhand run by Mr. Prakash Singh Danu. Data collected from handwritten sales notebooks covering 5 months of operation.</p>
+    </div>
+
+    <div class="g3 reveal">
+      <div class="pc pc-p1">
+        <div class="pc-bar"></div>
+        <div class="pc-icon" style="background:rgba(232,68,26,0.1);">📉</div>
+        <div class="pc-num" style="color:var(--pizza);">Problem 01</div>
+        <div class="ctitle">No Demand Forecasting</div>
+        <div class="cdesc">Revenue dropped 26.1% from September to December with no system to anticipate it — causing over-procurement in October and stockouts in late December.</div>
+        <ul class="blist">
+          <li>No weekly procurement target</li>
+          <li>Seasonal decline caught owner off-guard</li>
+          <li>Flat average useless given CV of 78%</li>
+        </ul>
+      </div>
+      <div class="pc pc-p2">
+        <div class="pc-bar"></div>
+        <div class="pc-icon" style="background:rgba(245,166,35,0.1);">📦</div>
+        <div class="pc-num" style="color:var(--cheese);">Problem 02</div>
+        <div class="ctitle">No Inventory System</div>
+        <div class="cdesc">47 menu items managed by guesswork. 12 items drive 69.2% of revenue — yet procurement treats all items equally, misallocating budget and storage.</div>
+        <ul class="blist">
+          <li>No ABC priority classification</li>
+          <li>Class C items over-stocked</li>
+          <li>Class A items at stockout risk</li>
+        </ul>
+      </div>
+      <div class="pc pc-p3">
+        <div class="pc-bar"></div>
+        <div class="pc-icon" style="background:rgba(46,204,113,0.1);">📊</div>
+        <div class="pc-num" style="color:var(--basil);">Problem 03</div>
+        <div class="ctitle">No Pattern Insight</div>
+        <div class="cdesc">Tuesday generates only 36% of Sunday's revenue — a structural gap the owner had no visibility on. No mechanism to stimulate demand on slow days.</div>
+        <ul class="blist">
+          <li>Sunday = 24.1% of all weekly revenue</li>
+          <li>Tuesday structural underperformance</li>
+          <li>No customer retention mechanism</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="g2 mt2">
+      <div class="card reveal rd1">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+          <div style="font-size:20px;">🗒️</div>
+          <div class="ctitle" style="margin-bottom:0;font-size:15px;">Data Collection</div>
+        </div>
+        <div class="irow"><div class="idot" style="background:var(--pizza)"></div><span class="ilbl">Source</span><span class="ival">Primary — handwritten notebook</span></div>
+        <div class="irow"><div class="idot" style="background:var(--cheese)"></div><span class="ilbl">Period</span><span class="ival">Sep 2023 – Jan 2024</span></div>
+        <div class="irow"><div class="idot" style="background:var(--basil)"></div><span class="ilbl">Transactions</span><span class="ival">997 rows × 10 variables</span></div>
+        <div class="irow"><div class="idot" style="background:var(--mozzarella)"></div><span class="ilbl">Verification</span><span class="ival">0% discrepancy rate</span></div>
+        <div class="irow"><div class="idot" style="background:var(--soft)"></div><span class="ilbl">Categories</span><span class="ival">9 product categories</span></div>
+        <div class="irow"><div class="idot" style="background:var(--muted)"></div><span class="ilbl">Unique items</span><span class="ival">47 selling SKUs</span></div>
+      </div>
+      <div class="card reveal rd2">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+          <div style="font-size:20px;">⚙️</div>
+          <div class="ctitle" style="margin-bottom:0;font-size:15px;">Tech Stack</div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+          <span class="tech-pill">📊 Excel</span>
+          <span class="tech-pill">🗄️ SQL / SQLite</span>
+          <span class="tech-pill">📈 Power BI</span>
+          <span class="tech-pill">📉 Chart.js</span>
+          <span class="tech-pill">🌐 HTML / CSS</span>
+        </div>
+        <div style="padding:16px;background:rgba(232,68,26,0.05);border-radius:10px;border:1px solid rgba(232,68,26,0.12);">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--pizza);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;">Submitted By</div>
+          <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;">Lakshika Dev</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px;">Roll No: 22f3000223</div>
+          <div style="font-size:12px;color:var(--muted);">IIT Madras · BS Data Science · BDM Capstone</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- INSIGHTS -->
+<section id="insights">
+  <div class="container">
+    <div class="reveal">
+      <div class="stag">Visual Insights</div>
+      <h2 class="stitle">Sales Analytics</h2>
+      <p class="sdesc">Five months of transaction data across 9 product categories and 47 items — revealing seasonal patterns, demand concentration, and weekly revenue cycles.</p>
+    </div>
+
+    <!-- ROW 1: Monthly Revenue + DOW -->
+    <div class="g2 reveal">
+      <div class="cc">
+        <div class="cc-head">
+          <div>
+            <div class="cc-title">Monthly Revenue Trend</div>
+            <div class="cc-sub">Sep 2023 – Jan 2024 · with MoM % change</div>
+          </div>
+          <span class="cc-badge">BAR + LINE</span>
+        </div>
+        <div class="cw"><canvas id="chartMonthly"></canvas></div>
+      </div>
+      <div class="cc">
+        <div class="cc-head">
+          <div>
+            <div class="cc-title">Revenue by Day of Week</div>
+            <div class="cc-sub">Total 5-month revenue · Mon to Sun</div>
+          </div>
+          <span class="cc-badge">BAR</span>
+        </div>
+        <div class="cw"><canvas id="chartDOW"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ROW 2: MA4 full width -->
+    <div class="cc mt reveal">
+      <div class="cc-head">
+        <div>
+          <div class="cc-title">Weekly Revenue vs MA4 Forecast</div>
+          <div class="cc-sub">Actual weekly revenue (blue) · MA4 smoothed trend (orange) · Feb 2024 forecast (grey dashed)</div>
+        </div>
+        <span class="cc-badge">MA4 FORECAST</span>
+      </div>
+      <div class="cwl"><canvas id="chartMA4"></canvas></div>
+    </div>
+
+    <!-- ROW 3: Category + ABC summary -->
+    <div class="g2 mt reveal">
+      <div class="cc">
+        <div class="cc-head">
+          <div>
+            <div class="cc-title">Revenue by Product Category</div>
+            <div class="cc-sub">9 categories · ₹1,52,977 total</div>
+          </div>
+          <span class="cc-badge">DONUT</span>
+        </div>
+        <div class="cw"><canvas id="chartCat"></canvas></div>
+      </div>
+      <div class="cc">
+        <div class="cc-head">
+          <div>
+            <div class="cc-title">Top 10 Items by Revenue</div>
+            <div class="cc-sub">With ABC classification · colour-coded</div>
+          </div>
+          <span class="cc-badge">PARETO</span>
+        </div>
+        <div class="cw"><canvas id="chartTop10"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ROW 4: ABC table full width -->
+    <div class="cc mt reveal">
+      <div class="cc-head">
+        <div>
+          <div class="cc-title">ABC Inventory Classification — All 47 Items</div>
+          <div class="cc-sub">Ranked by cumulative revenue · Class A ≤70% · Class B ≤90% · Class C &gt;90%</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <span class="cls-badge cls-a">A · 12 items</span>
+          <span class="cls-badge cls-b">B · 9 items</span>
+          <span class="cls-badge cls-c">C · 26 items</span>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="abc-table">
+          <thead><tr><th>Rank</th><th>Item</th><th>Class</th><th>Revenue (₹)</th><th>% of Total</th><th>Cum %</th><th style="width:140px">Share</th></tr></thead>
+          <tbody id="abcTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ROW 5: Seasonal indices -->
+    <div class="card mt reveal">
+      <div style="margin-bottom:4px;"><div class="stag">Seasonal Analysis</div></div>
+      <div class="ctitle">Empirically Derived Seasonal Adjustment Factors</div>
+      <div class="cdesc" style="margin-top:6px;">S(m) = [Actual Revenue(m) − MA4(m)] ÷ MA4(m) × 100% — computed from weekly MA4 comparison across all 23 observed weeks.</div>
+      <div class="seas-grid">
+        <div class="seas-cell">
+          <div class="seas-month">October</div>
+          <div class="seas-val seas-neg">−4.5%</div>
+          <div class="seas-rule">Reduce MA4 by 4.5%</div>
+        </div>
+        <div class="seas-cell">
+          <div class="seas-month">November</div>
+          <div class="seas-val seas-pos">+2.7%</div>
+          <div class="seas-rule">No reduction needed</div>
+        </div>
+        <div class="seas-cell">
+          <div class="seas-month">December</div>
+          <div class="seas-val seas-neg">−7.3%</div>
+          <div class="seas-rule">Reduce MA4 by 7.3%</div>
+        </div>
+        <div class="seas-cell">
+          <div class="seas-month">January</div>
+          <div class="seas-val seas-neg">−10.4%</div>
+          <div class="seas-rule">Caution — not uplift</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Descriptive Stats -->
+    <div class="g2 mt reveal">
+      <div class="card">
+        <div class="ctitle" style="margin-bottom:16px;">📐 Descriptive Statistics</div>
+        <div class="irow"><div class="idot" style="background:var(--pizza)"></div><span class="ilbl">Total Revenue</span><span class="ival">₹1,52,977</span></div>
+        <div class="irow"><div class="idot" style="background:var(--cheese)"></div><span class="ilbl">Mean Daily Revenue</span><span class="ival">₹1,100.55</span></div>
+        <div class="irow"><div class="idot" style="background:var(--basil)"></div><span class="ilbl">Median Daily Revenue</span><span class="ival">₹923</span></div>
+        <div class="irow"><div class="idot" style="background:var(--mozzarella)"></div><span class="ilbl">Std Deviation (Daily)</span><span class="ival">₹853.56</span></div>
+        <div class="irow"><div class="idot" style="background:var(--soft)"></div><span class="ilbl">CV (Coefficient of Variation)</span><span class="ival">78% — high volatility</span></div>
+        <div class="irow"><div class="idot" style="background:var(--muted)"></div><span class="ilbl">Min / Max Daily</span><span class="ival">₹189 / ₹7,425</span></div>
+        <div class="irow"><div class="idot" style="background:var(--pizza)"></div><span class="ilbl">Skewness</span><span class="ival">Positive (mean &gt; median)</span></div>
+        <div class="irow"><div class="idot" style="background:var(--cheese)"></div><span class="ilbl">Unit Price Range</span><span class="ival">₹5 – ₹370</span></div>
+      </div>
+      <div class="card">
+        <div class="ctitle" style="margin-bottom:16px;">📅 Key Revenue Milestones</div>
+        <div class="irow"><div class="idot" style="background:var(--pizza)"></div><span class="ilbl">September 2023 (Start)</span><span class="ival">₹34,231</span></div>
+        <div class="irow"><div class="idot" style="background:var(--cheese)"></div><span class="ilbl">October 2023</span><span class="ival">₹30,661 (−10.4%)</span></div>
+        <div class="irow"><div class="idot" style="background:var(--soft)"></div><span class="ilbl">November 2023</span><span class="ival">₹28,332 (−7.6%)</span></div>
+        <div class="irow"><div class="idot" style="background:var(--muted)"></div><span class="ilbl">December 2023 (Low)</span><span class="ival">₹25,310 (−10.7%)</span></div>
+        <div class="irow"><div class="idot" style="background:var(--basil)"></div><span class="ilbl">January 2024 (Peak)</span><span class="ival">₹34,443 (+36.1%)</span></div>
+        <div class="irow"><div class="idot" style="background:var(--pizza)"></div><span class="ilbl">Cumulative Sep→Dec Drop</span><span class="ival">₹8,921 (−26.1%)</span></div>
+        <div class="irow"><div class="idot" style="background:var(--basil)"></div><span class="ilbl">Sunday Peak (5-month)</span><span class="ival">₹36,799 (24.1%)</span></div>
+        <div class="irow"><div class="idot" style="background:var(--muted)"></div><span class="ilbl">Tuesday Trough</span><span class="ival">₹13,104 (8.6%)</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- METHODOLOGY -->
+<section id="methodology">
+  <div class="container">
+    <div class="reveal">
+      <div class="stag">Methodology</div>
+      <h2 class="stitle">Analytical Framework</h2>
+      <p class="sdesc">Three complementary methods applied to 997 transaction records, chosen for their implementability by a one-person operation with no software beyond a mobile phone and notebook.</p>
+    </div>
+    <div style="display:grid;gap:12px;" class="reveal">
+      <div class="mcard">
+        <div class="mnum">01</div>
+        <div style="flex:1">
+          <div class="mtag">Time Series Analysis</div>
+          <div class="ctitle" style="margin-bottom:6px;">4-Week Moving Average (MA4) Forecasting</div>
+          <div class="cdesc">MA4(t) = [R(t) + R(t−1) + R(t−2) + R(t−3)] ÷ 4. Applied to 23 weeks of data to smooth out day-to-day noise (CV = 78%) and produce a rolling weekly procurement target. Chosen over ARIMA and Exponential Smoothing because only 5 months of data are available — ARIMA typically requires 2+ years. The MA4 is also directly computable by the owner in a notebook without software.</div>
+        </div>
+      </div>
+      <div class="mcard">
+        <div class="mnum">02</div>
+        <div style="flex:1">
+          <div class="mtag">ABC Inventory Classification</div>
+          <div class="ctitle" style="margin-bottom:6px;">Cumulative Revenue Contribution Ranking</div>
+          <div class="cdesc">All 47 items ranked by revenue share. Cumulative Share(k) = Σ Share(i) for i=1 to k. Class A (≤70%): 12 items → always in stock with 2-day buffer. Class B (≤90%): 9 items → weekly review. Class C (&gt;90%): 26 items → order on demand only. EOQ was considered but rejected — requires complete COGS data which is unavailable given incomplete purchase bill records.</div>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+            <span class="cls-badge cls-a">Class A · 12 items · 69.2% revenue</span>
+            <span class="cls-badge cls-b">Class B · 9 items · 20.3% revenue</span>
+            <span class="cls-badge cls-c">Class C · 26 items · 10.5% revenue</span>
+          </div>
+        </div>
+      </div>
+      <div class="mcard">
+        <div class="mnum">03</div>
+        <div style="flex:1">
+          <div class="mtag">Day-of-Week Pattern Analysis</div>
+          <div class="ctitle" style="margin-bottom:6px;">Demand Pattern Identification</div>
+          <div class="cdesc">Day_Share(d) = R(d) ÷ Σ R(all days) × 100%. SUMIF applied to Day column across 139 trading days. Weekend days generate 79% more revenue per day than weekdays (₹31,885 vs ₹17,841). Sunday = 24.1% of weekly revenue; Tuesday = 8.6%. Cohort analysis was considered but not feasible — the notebook records no customer identification data, making true retention metrics impossible to compute.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- RECOMMENDATIONS -->
+<section id="recommendations">
+  <div class="container">
+    <div class="reveal">
+      <div class="stag">Recommendations</div>
+      <h2 class="stitle">SMART Action Plan</h2>
+      <p class="sdesc">Six recommendations across three problem statements — all designed for a one-person operation requiring no technology beyond a notebook and mobile phone.</p>
+    </div>
+
+    <div class="g2 reveal">
+      <div class="rcard">
+        <div class="raccent" style="background:var(--pizza);"></div>
+        <div class="rinner">
+          <div class="rtag" style="color:var(--pizza);">P1 · Immediate · Week 1</div>
+          <div class="ctitle">R1 — MA4 Procurement Rule</div>
+          <div class="cdesc" style="margin-top:6px;">Every Friday evening: add the past 4 weeks' revenue and divide by 4. This is the procurement target for next week. Under 5 minutes. No software needed.</div>
+          <ul class="blist">
+            <li>Target: procurement error &lt;10% of actual demand</li>
+            <li>Expected: save ₹3,000–5,000/month in winter wastage</li>
+          </ul>
+        </div>
+      </div>
+      <div class="rcard">
+        <div class="raccent" style="background:var(--pizza);"></div>
+        <div class="rinner">
+          <div class="rtag" style="color:var(--pizza);">P1 · Medium Term · Nov 2024</div>
+          <div class="ctitle">R5 — Seasonal Adjustments</div>
+          <div class="cdesc" style="margin-top:6px;">Apply empirically derived seasonal indices: Oct −4.5%, Nov +2.7%, Dec −7.3%, Jan −10.4%. Note: January requires caution, not uplift.</div>
+          <ul class="blist">
+            <li>Target: procurement variance within 5% by Dec 2024</li>
+            <li>Expected: protect ₹34,000+ January revenue</li>
+          </ul>
+        </div>
+      </div>
+      <div class="rcard">
+        <div class="raccent" style="background:var(--cheese);"></div>
+        <div class="rinner">
+          <div class="rtag" style="color:var(--cheese);">P2 · Immediate · Week 2</div>
+          <div class="ctitle">R2 — Class A Stocking Protocol</div>
+          <div class="cdesc" style="margin-top:6px;">Maintain 2-day buffer of 7 shared ingredients: cheese, pizza base, tomato sauce, capsicum, corn, onion, paneer. Friday checklist — 5 minutes.</div>
+          <ul class="blist">
+            <li>Target: zero Class A stockouts within 4 weeks</li>
+            <li>Expected: protect 69.2% of revenue (₹1,05,854 per 5 months)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="rcard">
+        <div class="raccent" style="background:var(--cheese);"></div>
+        <div class="rinner">
+          <div class="rtag" style="color:var(--cheese);">P2 · Immediate</div>
+          <div class="ctitle">R3 — Stop Pre-Stocking Class C</div>
+          <div class="cdesc" style="margin-top:6px;">Cease purchasing ingredients for 26 Class C items unless a customer places an order. Frees procurement budget and reduces perishable wastage immediately.</div>
+          <ul class="blist">
+            <li>Target: 30% reduction in procurement complexity</li>
+            <li>Expected: immediate cash flow relief</li>
+          </ul>
+        </div>
+      </div>
+      <div class="rcard">
+        <div class="raccent" style="background:var(--basil);"></div>
+        <div class="rinner">
+          <div class="rtag" style="color:var(--basil);">P3 · Within 1 Month</div>
+          <div class="ctitle">R6 — Tuesday Combo Offer</div>
+          <div class="cdesc" style="margin-top:6px;">Kulhad Pizza + Cold Drink at ₹109 (~10% off combined price of ₹119). Promote via handwritten sign at entrance. Zero additional cost.</div>
+          <ul class="blist">
+            <li>Target: 20% increase in Tuesday revenue in 8 weeks</li>
+            <li>Expected: +₹520/month from Tuesday uplift alone</li>
+          </ul>
+        </div>
+      </div>
+      <div class="rcard">
+        <div class="raccent" style="background:var(--basil);"></div>
+        <div class="rinner">
+          <div class="rtag" style="color:var(--basil);">P3 · 1–3 Months</div>
+          <div class="ctitle">R7 — WhatsApp Contact Collection</div>
+          <div class="cdesc" style="margin-top:6px;">Collect customer numbers at point of sale for Tuesday offer notifications via WhatsApp. Aim for 100+ contacts in 3 months. No app needed.</div>
+          <ul class="blist">
+            <li>Target: 100+ contact list within 3 months</li>
+            <li>Expected: direct retention communication channel</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Impact summary -->
+    <div class="card mt2 reveal">
+      <div class="ctitle" style="margin-bottom:20px;">📊 Projected 5-Month Impact</div>
+      <div class="g3" style="gap:14px;">
+        <div class="impbox" style="background:rgba(232,68,26,0.05);border:1px solid rgba(232,68,26,0.14);">
+          <div class="imp-num" style="color:var(--pizza);">₹3–5K</div>
+          <div class="imp-lbl">/month saved</div>
+          <div class="imp-desc">Winter wastage reduction from MA4 rule + seasonal adjustments (R1 + R5)</div>
+        </div>
+        <div class="impbox" style="background:rgba(245,166,35,0.05);border:1px solid rgba(245,166,35,0.14);">
+          <div class="imp-num" style="color:var(--cheese);">₹1.06L</div>
+          <div class="imp-lbl">revenue protected</div>
+          <div class="imp-desc">Class A stockout prevention across 5-month period (R2 + R3 + R4)</div>
+        </div>
+        <div class="impbox" style="background:rgba(46,204,113,0.05);border:1px solid rgba(46,204,113,0.14);">
+          <div class="imp-num" style="color:var(--basil);">+₹520</div>
+          <div class="imp-lbl">/month added</div>
+          <div class="imp-desc">Tuesday combo uplift at 20% revenue increase target (R6)</div>
+        </div>
+      </div>
+      <div style="margin-top:20px;padding:16px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <div style="font-size:13px;color:var(--soft);">Combined estimated improvement over 5 months comparable to observation period</div>
+        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:800;color:var(--pizza);">~₹20,000–22,000</div>
+      </div>
+      <div style="margin-top:8px;font-size:11px;color:var(--muted);text-align:right;font-family:'JetBrains Mono',monospace;">≈ 13–14% of total observed revenue of ₹1,52,977</div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:16px;">Lakshika Dev</div>
+        <div style="color:var(--muted);font-size:11px;margin-top:3px;font-family:'JetBrains Mono',monospace;">22f3000223 · IIT Madras · BS Data Science · BDM Capstone</div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <a href="https://github.com/lakshika0408/mr-pizza-bdm-project" target="_blank" class="btn btn-outline" style="font-size:12px;padding:8px 16px;">
+          <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+          GitHub Repo
+        </a>
+        <a href="https://github.com/lakshika0408" target="_blank" class="btn btn-primary" style="font-size:12px;padding:8px 16px;">View Portfolio →</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+Chart.defaults.color='#5A5550';
+Chart.defaults.font.family="'Inter',sans-serif";
+const gc='rgba(255,255,255,0.04)';
+const tf={size:11};
+
+// ── 1. MONTHLY REVENUE ──────────────────────────────────────────────────────
+new Chart(document.getElementById('chartMonthly'),{
+  type:'bar',
+  data:{
+    labels:['Sep 2023','Oct 2023','Nov 2023','Dec 2023','Jan 2024'],
+    datasets:[{
+      label:'Revenue (₹)',
+      data:[34231,30661,28332,25310,34443],
+      backgroundColor:['rgba(232,68,26,0.55)','rgba(232,68,26,0.45)','rgba(232,68,26,0.38)','rgba(232,68,26,0.3)','rgba(46,204,113,0.55)'],
+      borderColor:['#E8441A','#E8441A','#E8441A','#E8441A','#2ECC71'],
+      borderWidth:1,borderRadius:6,borderSkipped:false
+    }]
+  },
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>' ₹'+ctx.raw.toLocaleString('en-IN')}},
+      annotation:{}
+    },
+    scales:{
+      x:{grid:{display:false},ticks:{font:tf}},
+      y:{grid:{color:gc},ticks:{font:tf,callback:v=>'₹'+(v/1000).toFixed(0)+'K'},
+         title:{display:true,text:'Revenue (₹)',font:{size:10},color:'#5A5550'}}
+    }
+  }
+});
+
+// ── 2. DAY OF WEEK ───────────────────────────────────────────────────────────
+const dowColors=['rgba(139,132,128,0.5)','rgba(232,68,26,0.35)','rgba(139,132,128,0.5)','rgba(139,132,128,0.5)','rgba(139,132,128,0.5)','rgba(245,166,35,0.55)','rgba(46,204,113,0.65)'];
+const dowBorders=['#8A8480','#E8441A','#8A8480','#8A8480','#8A8480','#F5A623','#2ECC71'];
+new Chart(document.getElementById('chartDOW'),{
+  type:'bar',
+  data:{
+    labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    datasets:[{
+      label:'Revenue (₹)',
+      data:[16703,13104,20729,19029,19642,26971,36799],
+      backgroundColor:dowColors,borderColor:dowBorders,borderWidth:1,borderRadius:6,borderSkipped:false
+    }]
+  },
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' ₹'+ctx.raw.toLocaleString('en-IN')}}},
+    scales:{
+      x:{grid:{display:false},ticks:{font:tf}},
+      y:{grid:{color:gc},ticks:{font:tf,callback:v=>'₹'+(v/1000).toFixed(0)+'K'}}
+    }
+  }
+});
+
+// ── 3. MA4 CHART ─────────────────────────────────────────────────────────────
+const wkLabels=['28 Aug','04 Sep','11 Sep','18 Sep','25 Sep','02 Oct','09 Oct','16 Oct','23 Oct','30 Oct','06 Nov','13 Nov','20 Nov','27 Nov','04 Dec','11 Dec','18 Dec','25 Dec','01 Jan','08 Jan','15 Jan','22 Jan','29 Jan','05 Feb','12 Feb','19 Feb','26 Feb'];
+const wkActual=[4047,7309,10240,5438,9263,2964,7138,9013,8694,5068,4009,8754,5597,8204,5323,6094,3806,7573,6744,15248,5377,4878,2196,null,null,null,null];
+const wkMA4hist=[null,null,null,6758,8062,6976,6200,7094,6952,7478,6696,6631,5857,6641,6969,6304,5856,5699,6054,8342,8735,8061,6924,null,null,null,null];
+const wkFcast=[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,6924,6924,4843,4710,4668];
+
+new Chart(document.getElementById('chartMA4'),{
+  type:'line',
+  data:{
+    labels:wkLabels,
+    datasets:[
+      {label:'Actual Weekly Revenue',data:wkActual,borderColor:'#3B82F6',backgroundColor:'rgba(59,130,246,0.06)',borderWidth:2.5,pointRadius:3.5,pointBackgroundColor:'#3B82F6',pointBorderColor:'#0a0a0a',pointBorderWidth:1.5,tension:0.3,fill:true,spanGaps:false},
+      {label:'MA4 Trend',data:wkMA4hist,borderColor:'#F5A623',borderWidth:2.5,borderDash:[6,3],pointRadius:3,pointBackgroundColor:'#F5A623',pointBorderColor:'#0a0a0a',pointBorderWidth:1,tension:0.4,fill:false,spanGaps:false},
+      {label:'MA4 Forecast (Feb 2024)',data:wkFcast,borderColor:'#5A5550',borderWidth:2,borderDash:[4,4],pointRadius:4,pointStyle:'triangle',pointBackgroundColor:'#5A5550',tension:0,fill:false,spanGaps:true}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,
+    interaction:{mode:'index',intersect:false},
+    plugins:{
+      legend:{position:'bottom',labels:{boxWidth:12,font:{size:11},padding:16,color:'#8A8480'}},
+      tooltip:{backgroundColor:'rgba(10,10,10,0.92)',titleColor:'#F0EDE8',bodyColor:'#8A8480',padding:10,callbacks:{label:ctx=>{if(ctx.raw===null)return null;return ' '+ctx.dataset.label+': ₹'+Math.round(ctx.raw).toLocaleString('en-IN');}}}
+    },
+    scales:{
+      x:{grid:{color:gc},ticks:{font:{size:10},color:'#5A5550',maxTicksLimit:12,maxRotation:45}},
+      y:{grid:{color:gc},ticks:{font:tf,callback:v=>'₹'+(v/1000).toFixed(0)+'K'},title:{display:true,text:'Revenue (₹)',font:{size:10},color:'#5A5550'}}
+    }
+  }
+});
+
+// ── 4. CATEGORY DONUT ────────────────────────────────────────────────────────
+new Chart(document.getElementById('chartCat'),{
+  type:'doughnut',
+  data:{
+    labels:['Pizza','Burger','Shake','Dessert','Beverage','Combo','Bread','Hot Dog','Add-on'],
+    datasets:[{
+      data:[121956,11933,7880,3555,3380,2236,797,700,540],
+      backgroundColor:['#E8441A','#F5A623','#2ECC71','rgba(232,68,26,0.4)','rgba(245,166,35,0.4)','rgba(46,204,113,0.4)','rgba(139,132,128,0.5)','rgba(139,132,128,0.38)','rgba(139,132,128,0.25)'],
+      borderColor:'#161616',borderWidth:2,hoverOffset:8
+    }]
+  },
+  options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
+    plugins:{
+      legend:{position:'right',labels:{boxWidth:10,font:{size:11},padding:10,color:'#8A8480'}},
+      tooltip:{callbacks:{label:ctx=>' ₹'+ctx.raw.toLocaleString('en-IN')+' ('+((ctx.raw/152977)*100).toFixed(1)+'%)'}}
+    }
+  }
+});
+
+// ── 5. TOP 10 ITEMS ──────────────────────────────────────────────────────────
+const itemNames=['Mix Veg Margharita','Kulhad Pizza','Cheese N Corn','Onion Cheese','Paneer Pizza','Tandoori Pizza','Veg Burger','Spicy Mix Veg','Overloaded Cheese','Veg Cheese Burger'];
+const itemRevs=[18010,16335,12570,9314,8804,8671,6786,5550,5487,4838];
+const itemColors=itemRevs.map((_,i)=>i<6?'rgba(232,68,26,0.65)':i<9?'rgba(245,166,35,0.65)':'rgba(46,204,113,0.65)');
+const itemBorders=itemRevs.map((_,i)=>i<6?'#E8441A':i<9?'#F5A623':'#2ECC71');
+new Chart(document.getElementById('chartTop10'),{
+  type:'bar',
+  data:{
+    labels:itemNames,
+    datasets:[{label:'Revenue (₹)',data:itemRevs,backgroundColor:itemColors,borderColor:itemBorders,borderWidth:1,borderRadius:5,borderSkipped:false}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' ₹'+ctx.raw.toLocaleString('en-IN')}}},
+    scales:{
+      x:{grid:{color:gc},ticks:{font:tf,callback:v=>'₹'+(v/1000).toFixed(0)+'K'}},
+      y:{grid:{display:false},ticks:{font:{size:10}}}
+    }
+  }
+});
+
+// ── 6. ABC TABLE ─────────────────────────────────────────────────────────────
+const abcItems=[
+  {name:'Mix Veg Margharita Pizza',rev:18010,units:140,pct:11.77,cum:11.8,cls:'A'},
+  {name:'Kulhad Pizza',rev:16335,units:165,pct:10.68,cum:22.5,cls:'A'},
+  {name:'Cheese N Corn Pizza',rev:12570,units:130,pct:8.22,cum:30.7,cls:'A'},
+  {name:'Onion Cheese Pizza',rev:9314,units:126,pct:6.09,cum:36.8,cls:'A'},
+  {name:'Paneer Pizza',rev:8804,units:56,pct:5.76,cum:42.5,cls:'A'},
+  {name:'Tandoori Pizza',rev:8671,units:49,pct:5.67,cum:48.2,cls:'A'},
+  {name:'Veg Burger',rev:6786,units:174,pct:4.44,cum:52.6,cls:'A'},
+  {name:'Spicy Mix Veg Pizza',rev:5550,units:30,pct:3.63,cum:56.2,cls:'A'},
+  {name:'Overloaded Cheese Pizza',rev:5487,units:25,pct:3.59,cum:59.8,cls:'A'},
+  {name:'Veg Cheese Burger',rev:4838,units:82,pct:3.16,cum:63.0,cls:'A'},
+  {name:'Baby Cheese Pizza',rev:4753,units:97,pct:3.11,cum:66.1,cls:'A'},
+  {name:'Onion Capsicum Pizza',rev:4736,units:44,pct:3.10,cum:69.2,cls:'A'},
+  {name:'Onion Paneer Pizza',rev:4556,units:24,pct:2.98,cum:72.2,cls:'B'},
+  {name:'MrPizza Special Pizza',rev:4327,units:23,pct:2.83,cum:75.0,cls:'B'},
+  {name:'Sweet Corn Paneer Pizza',rev:4267,units:23,pct:2.79,cum:77.8,cls:'B'},
+  {name:'Veg Delight Pizza',rev:3897,units:21,pct:2.55,cum:80.3,cls:'B'},
+  {name:'Corn & Capsicum Pizza',rev:3610,units:20,pct:2.36,cum:82.7,cls:'B'},
+  {name:'Capsicum Pizza',rev:2788,units:20,pct:1.82,cum:84.5,cls:'B'},
+  {name:'Paneer Tikka Pizza',rev:2640,units:15,pct:1.73,cum:86.2,cls:'B'},
+  {name:'Peppy Paneer',rev:2520,units:14,pct:1.65,cum:87.9,cls:'B'},
+  {name:'Cold Coffee',rev:1944,units:36,pct:1.27,cum:89.2,cls:'B'},
+  {name:'Remaining 26 items (Class C)',rev:16079,units:251,pct:10.51,cum:100.0,cls:'C'},
+];
+const maxRev=18010;
+(()=>{
+  const tb=document.getElementById('abcTableBody');
+  abcItems.forEach((d,i)=>{
+    const clsClass=d.cls==='A'?'cls-a':d.cls==='B'?'cls-b':'cls-c';
+    const barColor=d.cls==='A'?'#E8441A':d.cls==='B'?'#F5A623':'#2ECC71';
+    const barW=Math.round((d.rev/maxRev)*100);
+    tb.innerHTML+=`<tr>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);">${i<21?String(i+1).padStart(2,'0'):'—'}</td>
+      <td style="font-weight:500;">${d.name}</td>
+      <td><span class="cls-badge ${clsClass}">${d.cls}</span></td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;">₹${d.rev.toLocaleString('en-IN')}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;">${d.pct.toFixed(2)}%</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:${d.cum<=70?'#f87171':d.cum<=90?'#fbbf24':'#6ee7b7'}">${d.cum.toFixed(1)}%</td>
+      <td><div style="display:flex;align-items:center;gap:7px;"><div class="barbg"><div class="bar" style="width:${barW}%;background:${barColor};"></div></div><span style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;min-width:34px;">${d.pct.toFixed(1)}%</span></div></td>
+    </tr>`;
+  });
+})();
+
+// ── SCROLL REVEAL ─────────────────────────────────────────────────────────────
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.07});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
