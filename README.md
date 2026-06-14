@@ -30,7 +30,7 @@ The project identifies three core business problems - no demand forecasting, no 
  
 | Property | Value |
 |---|---|
-| Source | Primary — handwritten sales notebook |
+| Source | Primary - handwritten sales notebook |
 | Period | Sep 2023 – Jan 2024 |
 | Transactions | 997 rows |
 | Trading Days | 139 days |
